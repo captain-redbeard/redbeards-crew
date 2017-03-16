@@ -12,7 +12,7 @@ class Config
     public static function init()
     {
         //Load default config
-        $config = require_once __DIR__ . '/../application/config.php';
+        $config = require_once __DIR__ . '/../../../../application/config.php';
         self::load($config);
         
         //Get other configs

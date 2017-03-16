@@ -12,7 +12,7 @@ use Redbeard\Crew\Database;
 use Redbeard\Crew\Models\Role;
 use Redbeard\Crew\Utils\Dates;
 use Redbeard\Crew\Utils\Strings;
-use Redbeard\Crew\Urils\Validator;
+use Redbeard\Crew\Utils\Validator;
 use Redbeard\Crew\ThirdParty\Google2FA;
 use Endroid\QrCode\QrCode;
 
@@ -120,7 +120,7 @@ class User
         return $roles;
     }
     
-    public function register($username, $password, $confirm_password, $role_id = -1, $timezone = 'UTC', $set_session = true)
+    public function register($username, $password, $confirm_password, $timezone = 'UTC', $role_id = -1, $set_session = true)
     {
         $username = Strings::cleanInput($username);
         $timezone = Strings::cleanInput($timezone, 1);
