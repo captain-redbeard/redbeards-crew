@@ -1,0 +1,12 @@
+{
+    "name": "redbeards/crew",
+    "require": {
+        "php": ">=7.0.0",
+        "endroid/qrcode": ">=1.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Redbeard\\Crew\\": "src/"
+        }
+    }
+}
