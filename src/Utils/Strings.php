@@ -160,7 +160,7 @@ class Strings
             case 4:
                 $clean = strip_tags($input);
                 $clean = preg_replace('/[^a-zA-Z0-9 \-]/i', ' ', $clean);
-                $clean = self::cleanTitle($clean);
+                $clean = self::cleanUrl($clean);
                 break;
             default:
                 $clean = strip_tags($input);
