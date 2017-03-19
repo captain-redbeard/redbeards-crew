@@ -7,6 +7,7 @@ namespace Redbeard\Crew;
 
 use Redbeard\Crew\Config;
 use Redbeard\Crew\Session;
+use Redbeard\Crew\Database;
 use Redbeard\Crew\Utils\Strings;
 
 class Controller
@@ -58,12 +59,15 @@ class Controller
         $this->startSession();
         
         if (isset($_SESSION['user_id'], $_SESSION['login_string'])) {
-            $user = $this->systemModel('User')->getUser($_SESSION['user_id']);
+            $user = Database::select(
+                "SELECT user_id, user_guid FROM users WHERE user_id = ? LIMIT 1;",
+                [$_SESSION['user_id']]
+            );
             
             if (count($user) === 1) {
                 $login_check = hash(
                     'sha512',
-                    $user->id . $_SERVER['HTTP_USER_AGENT'] . $user->guid
+                    $user[0]['user_id'] . $_SERVER['HTTP_USER_AGENT'] . $user[0]['user_guid']
                 );
                 
                 if ($login_check === $_SESSION['login_string']) {
