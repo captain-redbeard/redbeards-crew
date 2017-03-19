@@ -16,7 +16,7 @@ class Controller
     
     protected function model($model)
     {
-        $model = $this->config('app.path') . 'Models\\' . $model;
+        $model = $this->config('app.path') . $this->config('app.models_path') . $model;
         return new $model;
     }
     
@@ -102,18 +102,21 @@ class Controller
         $data['BASE_HREF'] = $this->config('app.base_href');
         $data['SITE'] = $this->config('site');
         $data['LOGGED_IN'] = $this->isLoggedIn();
-        $base_directory = $this->config('app.base_dir');
+        
+        if ($this->isLoggedIn()) {
+            $data['USER'] = $this->getUser();
+        }
         
         if (!$raw) {
-            require_once $base_directory . '/Views/template/header.php';
+            require_once $this->config('app.views_directory') . 'template/header.php';
         }
         
         foreach ($view as $v) {
-            require_once $base_directory . '/Views/' . $v . '.php';
+            require_once $this->config('app.views_directory') . $v . '.php';
         }
         
         if (!$raw) {
-            require_once $base_directory . '/Views/template/footer.php';
+            require_once $this->config('app.views_directory') . 'template/footer.php';
         }
     }
     

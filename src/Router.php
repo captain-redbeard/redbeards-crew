@@ -18,7 +18,7 @@ class Router
     
     public function route($get, $post)
     {
-        $this->controller = Config::get('app.path') . "Controllers\\" . Config::get('app.default_controller');
+        $this->controller = Config::get('app.path') . Config::get('app.controllers_path') . Config::get('app.default_controller');
         $this->method = Config::get('app.default_method');
         
         //Get parsed url
@@ -87,15 +87,15 @@ class Router
             }
             
             //Check if controller is found, otherwise keep searching folders
-            if (file_exists(Config::get('app.base_dir') . '/Controllers/' . $temp . '.php')) {
-                $this->controller = Config::get('app.path') . 'Controllers\\' . str_replace('/', '\\', $temp);
+            if (file_exists(Config::get('app.controllers_directory') . $temp . '.php')) {
+                $this->controller = Config::get('app.path') . Config::get('app.controllers_path') . str_replace('/', '\\', $temp);
                 $this->method_index = $controller_index + 1;
                 
                 //Unset URL
                 for ($i = 0; $i <= $controller_index; $i++) {
                     unset($url[$i]);
                 }
-            } elseif (file_exists(Config::get('app.base_dir') . '/Controllers/' . $temp)) {
+            } elseif (file_exists(Config::get('app.controllers_directory') . $temp)) {
                 $url = $this->setController(
                     $url,
                     ($controller_index + 1)
