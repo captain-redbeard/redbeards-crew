@@ -1,6 +1,7 @@
 {
     "name": "redbeards/crew",
     "type": "library",
+    "license": "MIT",
     "require": {
         "php": ">=7.0.0",
         "endroid/qrcode": ">=1.9"
