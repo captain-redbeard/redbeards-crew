@@ -84,7 +84,7 @@ class Strings
     */
     public static function cleanURL($url)
     {
-        $newtitle = self::stringLimitWords($url, 10);
+        $newtitle = self::limitWords($url, 10);
         $urltitle = preg_replace('/[^a-z0-9]/i', ' ', $newtitle);
         return strtolower(str_replace(' ', '-', $newtitle));
     }
