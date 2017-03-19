@@ -7,6 +7,7 @@ namespace Redbeard\Crew;
 
 use \PDO;
 use Redbeard\Crew\Config;
+use Redbeard\Crew\ChangeControl;
 
 class Database
 {
@@ -62,6 +63,31 @@ class Database
     {
         $stmt = self::prepare($query);
         return $stmt->execute($parameters);
+    }
+    
+    public static function updateWithChangeControl($title, $table, $where, $value, $query, $parameters)
+    {
+        //Get values before update
+        $prior = self::select(
+            "SELECT * FROM $table WHERE $where = ?;",
+            [$value]
+        );
+        
+        //Do update
+        $stmt = self::prepare($query);
+        $result = $stmt->execute($parameters);
+        
+        //Get values after update
+        $after = self::select(
+            "SELECT * FROM $table WHERE $where = ?;",
+            [$value]
+        );
+        
+        //Add change control
+        ChangeControl::add($title, $prior[0], $after[0]);
+        
+        //Return
+        return $result;
     }
     
     public static function insert($query, $parameters)

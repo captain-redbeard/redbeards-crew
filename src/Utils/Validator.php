@@ -39,7 +39,7 @@ class Validator
     */
     public static function validateEmail($email)
     {
-        $validEmail = self::validateVariable('Email', $email, 4, 256);
+        $validEmail = self::validateLength('Email', $email, 4, 256);
         
         if ($validEmail !== 0) {
             return $validEmail;

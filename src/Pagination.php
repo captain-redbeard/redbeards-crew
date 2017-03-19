@@ -17,7 +17,7 @@ class Pagination
         $current_page = isset($_GET['page']) ? Strings::cleanInput($_GET['page'], 2) : 1;
         
         //Get setting model
-        $setting = Config::get('app.system_path') . Config::get('app.models_path') . 'Setting';
+        $setting = Config::get('app.system_path') . 'Models\\' . 'Setting';
         $setting = new $setting;
         $results_per_page = $setting->getSettingById(1)->value;
         $range = $setting->getSettingById(2)->value;
