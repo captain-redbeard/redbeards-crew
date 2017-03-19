@@ -9,6 +9,7 @@ use Redbeard\Crew\Config;
 use Redbeard\Crew\Session;
 use Redbeard\Crew\Tracking;
 use Redbeard\Crew\Database;
+use Redbeard\Crew\ChangeControl;
 use Redbeard\Crew\Models\Role;
 use Redbeard\Crew\Utils\Dates;
 use Redbeard\Crew\Utils\Strings;
@@ -31,6 +32,7 @@ class User
     public $modified = null;
     public $made_date = null;
     public $roles = null;
+    public $access = null;
     
     public function __construct(
         $id = null,
@@ -44,7 +46,8 @@ class User
         $activation = null,
         $mfa_enabled = null,
         $modified = null,
-        $made_date = null
+        $made_date = null,
+        $access = null
     )
     {
         $this->id = $id;
@@ -59,6 +62,7 @@ class User
         $this->mfa_enabled = $mfa_enabled;
         $this->modified = $modified;
         $this->made_date = $made_date;
+        $this->access = $access;
         $this->roles = $this->initRoles($id);
     }
     
@@ -70,7 +74,8 @@ class User
         //Get details
         $user_details = Database::select(
             "SELECT user_id, user_guid, username, email, first_name, last_name, timezone, secret_key, activation,
-            mfa_enabled, modified, made_date
+            mfa_enabled, modified, made_date,
+                IFNULL((SELECT allowed FROM user_access WHERE user_guid = users.user_guid AND cancelled = 0), 1) AS access
             FROM users
             WHERE user_id = ?;",
             [$user_id]
@@ -89,7 +94,8 @@ class User
             htmlspecialchars($user_details['activation']),
             $user_details['mfa_enabled'],
             $user_details['modified'],
-            $user_details['made_date']
+            $user_details['made_date'],
+            htmlspecialchars($user_details['access'])
         );
            
         //Return
@@ -224,6 +230,10 @@ class User
             );
             
             if (count($attempts) < Config::get('app.max_login_attempts')) {
+                if (!$this->isAllowed($existing[0]['access'], Tracking::getRemoteAddress())) {
+                    return 'IP Address is not allowed.';
+                }
+                
                 if (password_verify($password, $existing[0]['password'])) {
                     if (password_needs_rehash(
                         $existing[0]['password'],
@@ -457,6 +467,36 @@ class User
         }
     }
     
+    //Check if the ip is within the allowed range
+    public function isAllowed($allowed, $ip_address)
+    {
+        if (Strings::contains($ip_address, $allowed) || $allowed == 1) {
+            return true;
+        } else {
+            //Check further
+            $ips = explode(',', $allowed);
+            
+            //Strip the dots to do a range compare
+            $ip_str = str_replace('.', '', $ip_address);
+            
+            //Check each IP in the exploded range
+            for ($i = 0; $i < count($ips); $i++) {
+                if (strpos($ips[$i], '-') !== false) {
+                    //Break down the IP range
+                    $ip2 = explode('-', $ips[$i]);
+                    
+                    //Is the IP within the specified range
+                    if ($ip_str >= str_replace('.', '', $ip2[0]) && $ip_str <= str_replace('.', '', $ip2[1])) {
+                        return true;
+                    }
+                }
+            }
+            
+            //Failed to find the IP
+            return false;
+        }
+    }
+    
     public function getQrCode()
     {
         $qrCode = new QrCode();
@@ -519,5 +559,10 @@ class User
     public function getMadeDate()
     {
         return Dates::convertTime($this->made_date);
+    }
+    
+    public function hasAccess()
+    {
+        return $this->access;
     }
 }
