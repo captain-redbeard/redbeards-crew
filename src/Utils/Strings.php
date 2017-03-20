@@ -76,6 +76,22 @@ class Strings
     }
     
     /**
+    * Star out all characters except for the first and last.
+    *
+    * @param $string        - string to star
+    * @param $star_length   - how many stars to show
+    *
+    * @returns starred string
+    */
+    public static function getStarred($string, $star_length = 4)
+    {
+        $length = strlen($string);
+        $string = substr($string, 0, 1) . str_repeat('*', $length - 2) . substr($string, $length - 1, 1);
+        $stars = str_repeat('*', $star_length);
+        return preg_replace("/(.)\\1+/", $stars, $string);
+    }
+    
+    /**
     * Clean the specified url, normally used for page titles.
     *
     * @param $url - string to clean

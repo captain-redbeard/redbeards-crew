@@ -58,16 +58,22 @@ class Controller
     {
         $this->startSession();
         
-        if (isset($_SESSION['user_id'], $_SESSION['login_string'])) {
+        if (isset($_SESSION[$this->config('database.user_id_column')], $_SESSION['login_string'])) {
             $user = Database::select(
-                "SELECT user_id, user_guid FROM users WHERE user_id = ? LIMIT 1;",
-                [$_SESSION['user_id']]
+                "SELECT " . $this->config('database.user_id_column') . ", " .
+                    $this->config('database.user_guid_column') .
+                    " FROM " . $this->config('database.users_table') .
+                    " WHERE " . $this->config('database.user_id_column') .
+                    " = ? LIMIT 1;",
+                [$_SESSION[$this->config('database.user_id_column')]]
             );
             
             if (count($user) === 1) {
                 $login_check = hash(
                     'sha512',
-                    $user[0]['user_id'] . $_SERVER['HTTP_USER_AGENT'] . $user[0]['user_guid']
+                    $user[0][$this->config('database.user_id_column')] .
+                        $_SERVER['HTTP_USER_AGENT'] .
+                        $user[0][$this->config('app.user_guid_column')]
                 );
                 
                 if ($login_check === $_SESSION['login_string']) {
@@ -107,16 +113,19 @@ class Controller
             $data['USER'] = $this->getUser();
         }
         
+        //View directory
+        $view_directory = $this->config('app.base_directory') . $this->config('app.views_directory');
+        
         if (!$raw) {
-            require_once $this->config('app.views_directory') . 'template/header.php';
+            require_once $view_directory . 'template/header.php';
         }
         
         foreach ($view as $v) {
-            require_once $this->config('app.views_directory') . $v . '.php';
+            require_once $view_directory . $v . '.php';
         }
         
         if (!$raw) {
-            require_once $this->config('app.views_directory') . 'template/footer.php';
+            require_once $view_directory . 'template/footer.php';
         }
     }
     

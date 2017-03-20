@@ -87,7 +87,7 @@ class Router
             }
             
             //Check if controller is found, otherwise keep searching folders
-            if (file_exists(Config::get('app.controllers_directory') . $temp . '.php')) {
+            if (file_exists(Config::get('app.base_directory') . Config::get('app.controllers_directory') . $temp . '.php')) {
                 $this->controller = Config::get('app.path') . Config::get('app.controllers_path') . str_replace('/', '\\', $temp);
                 $this->method_index = $controller_index + 1;
                 
@@ -95,7 +95,7 @@ class Router
                 for ($i = 0; $i <= $controller_index; $i++) {
                     unset($url[$i]);
                 }
-            } elseif (file_exists(Config::get('app.controllers_directory') . $temp)) {
+            } elseif (file_exists(Config::get('app.base_directory') . Config::get('app.controllers_directory') . $temp)) {
                 $url = $this->setController(
                     $url,
                     ($controller_index + 1)

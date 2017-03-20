@@ -12,25 +12,38 @@ class Config
     public static function init()
     {
         //Load default config
-        $config = require_once __DIR__ . '/../../../../application/config.php';
-        self::load($config);
+        self::loadAll(__DIR__ . '/Config/', false);
         
+        //Load user default config
+        $config = require_once __DIR__ . '/../../../../application/config.php';
+        self::load($config, true);
+        
+        //Load user config
+        self::loadAll(self::get('app.base_directory') . self::get('app.config_directory'), true);
+    }
+    
+    public static function loadAll($directory, $keep_existing = false)
+    {
         //Get other configs
-        $configs = scandir(self::get('app.config_directory'));
+        $configs = scandir($directory);
         
         //Load other configs
         foreach ($configs as $file) {
             if ($file !== '.' && $file !== '..') {
-                $config = require_once self::get('app.config_directory') . $file;
-                self::load($config);
+                $config = require_once $directory . $file;
+                self::load($config, $keep_existing);
             }
         }
     }
     
-    public static function load($config)
+    public static function load($config, $keep_existing = false)
     {
         foreach ($config as $key => $value) {
-            self::set($key, $value);
+            self::set($key, $value, $keep_existing);
+            
+            foreach ($value as $k => $v) {
+                self::set($key . '.' . $k, $v);
+            }
         }
     }
     
@@ -54,13 +67,15 @@ class Config
         }
     }
     
-    public static function set($key, $value)
+    public static function set($key, $value, $keep_existing = false)
     {
         $split = explode('.', $key);
         
         switch (count($split)) {
             case 1:
-                self::$configs[$split[0]] = $value;
+                if (!$keep_existing) {
+                    self::$configs[$split[0]] = $value;
+                }
                 break;
             case 2:
                 self::$configs[$split[0]][$split[1]] = $value;
