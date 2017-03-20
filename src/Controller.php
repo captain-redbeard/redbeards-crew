@@ -73,7 +73,7 @@ class Controller
                     'sha512',
                     $user[0][$this->config('database.user_id_column')] .
                         $_SERVER['HTTP_USER_AGENT'] .
-                        $user[0][$this->config('app.user_guid_column')]
+                        $user[0][$this->config('database.user_guid_column')]
                 );
                 
                 if ($login_check === $_SESSION['login_string']) {
