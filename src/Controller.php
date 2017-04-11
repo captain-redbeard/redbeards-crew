@@ -26,6 +26,12 @@ class Controller
         return new $model;
     }
     
+    protected function controller($controller)
+    {
+        $controller = $this->config('app.path') . $this->config('app.controllers_path') . $controller;
+        return new $controller;
+    }
+    
     protected function startSession()
     {
         Session::start();
