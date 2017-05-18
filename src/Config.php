@@ -29,7 +29,9 @@ class Config
         
         //Load other configs
         foreach ($configs as $file) {
-            if ($file !== '.' && $file !== '..') {
+            $pathinfo = pathinfo($file);
+            
+            if ($file !== '.' && $file !== '..' && $pathinfo['extension'] === 'php') {
                 $config = require_once $directory . $file;
                 self::load($config, $keep_existing);
             }
