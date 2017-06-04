@@ -88,7 +88,7 @@ class Setting
         $value = Strings::cleanInput($value);
         $validValue = Validator::validateLength('Value', $value, 1, 256);
         
-        if ($validValue !== 0) {
+        if ($validValue !== true) {
             return $validValue;
         }
         
@@ -106,6 +106,6 @@ class Setting
             ]
         );
         
-        return 0;
+        return true;
     }
 }

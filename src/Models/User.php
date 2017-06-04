@@ -134,11 +134,11 @@ class User
         $validUsername = Validator::validateLength('Username', $username, 4, 256);
         $validPassword = Validator::validateLength('Password', $password, 8, 256);
         
-        if ($validUsername !== 0) {
+        if ($validUsername !== true) {
             return $validUsername;
         }
         
-        if ($validPassword !== 0) {
+        if ($validPassword !== true) {
             return $validPassword;
         }
         
@@ -192,7 +192,8 @@ class User
                     $_SESSION['login_string'] = hash('sha512', $user_id . $_SERVER['HTTP_USER_AGENT'] . $guid);
                     $_SESSION[Config::get('app.user_session')] = $this->getUser($user_id);
                 }
-                return 0;
+                
+                return true;
             } else {
                 return 'Failed to create user, contact support.';
             }
@@ -206,11 +207,11 @@ class User
         $validUsername = Validator::validateLength('Username', $username, 4, 256);
         $validPassword = Validator::validateLength('Password', $password, 8, 256);
         
-        if ($validUsername !== 0) {
+        if ($validUsername !== true) {
             return $validUsername;
         }
         
-        if ($validPassword !== 0) {
+        if ($validPassword !== true) {
             return $validPassword;
         }
         
@@ -276,7 +277,7 @@ class User
                     );
                     $_SESSION[Config::get('app.user_session')] = $this->getUser($_SESSION['user_id']);
                     
-                    return 0;
+                    return true;
                 } else {
                     Database::update(
                         "INSERT INTO login_attempts(user_id, made_date) VALUES (?, NOW());",
@@ -303,15 +304,15 @@ class User
         $valid_first_name = Validator::validateLength('First Name', $first_name, 1, 128);
         $valid_last_name = Validator::validateLength('Last Name', $last_name, 1, 128);
         
-        if ($valid_username !== 0) {
+        if ($valid_username !== true) {
             return $valid_username;
         }
         
-        if ($valid_first_name !== 0) {
+        if ($valid_first_name !== true) {
             return $valid_first_name;
         }
         
-        if ($valid_last_name !== 0) {
+        if ($valid_last_name !== true) {
             return $valid_last_name;
         }
         
@@ -347,11 +348,12 @@ class User
                         $existing[0]['user_id']
                     ]
                 );
-            
+                
                 if ($set_session) {
                     $_SESSION[Config::get('app.user_session')] = $this->getUser($this->user_id);
                 }
-                return 0;
+                
+                return true;
         } else {
             return 'Failed to update user, contact support.';
         }
@@ -378,7 +380,7 @@ class User
                 ]
             )) {
                 $this->mfa_enabled = 1;
-                return 0;
+                return true;
             }
         } else {
             return 'Invalid codes.';
@@ -399,7 +401,7 @@ class User
         
         $this->mfa_enabled = 0;
         
-        return 0;
+        return true;
     }
     
     public function resetPasswordRequest()
@@ -416,7 +418,7 @@ class User
         );
         
         //Return
-        return 0;
+        return true;
     }
     
     public function resetPassword($password, $new_password, $confirm_new_password, $require_password = true)
@@ -427,7 +429,7 @@ class User
         
         $validPassword = Validator::validateLength('Password', $new_password, 8, 256);
         
-        if ($validPassword !== 0) {
+        if ($validPassword !== true) {
             return $validPassword;
         }
         
@@ -455,7 +457,7 @@ class User
                         $this->guid
                     ]
                 )) {
-                    return 0;
+                    return true;
                 } else {
                     return 'Failed to reset password, contact support.';
                 }

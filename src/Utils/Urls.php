@@ -14,7 +14,7 @@ class Urls
     */
     public static function getDirectoryAsUrl()
     {
-        $url = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
+        $url = self::getProtocol();
         $url .= $_SERVER['SERVER_NAME'] . str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname(__DIR__));
         return $url;
     }
@@ -26,8 +26,34 @@ class Urls
     */
     public static function getUrl()
     {
-        $url = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
+        $url = self::getProtocol();
         $url .= $_SERVER['SERVER_NAME'] . str_replace($_SERVER['DOCUMENT_ROOT'], '', $_SERVER['PHP_SELF']);
         return str_replace('/index.php', '', $url);
+    }
+    
+    /**
+    * Check if SSL is used.
+    *
+    * @returns boolean
+    */
+    public static function isSecure()
+    {
+        return (isset($_SERVER['HTTPS']) && $_SERVER['https'] == 'on') ||
+            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+             (
+                $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ||
+                $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'on'
+             )
+            );
+    }
+    
+    /**
+    * Get the protocol in use.
+    *
+    * returns string
+    */
+    public static function getProtocol()
+    {
+        return self::isSecure() ? 'https://' : 'http://';
     }
 }

@@ -27,7 +27,7 @@ class Validator
             return $name . ' must be less than ' . $max_length . ' characters.';
         }
         
-        return 0;
+        return true;
     }
     
     /**
@@ -49,6 +49,6 @@ class Validator
             return 'Invalid email address.';
         }
         
-        return 0;
+        return true;
     }
 }
